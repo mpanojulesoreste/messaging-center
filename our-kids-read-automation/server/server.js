@@ -4,6 +4,10 @@ mongoose.set('strictQuery', false);
 const cors = require('cors');
 require('dotenv').config();
 
+// Import routes
+const authRoutes = require('./routes/auth');
+const messageRoutes = require('./routes/messages');
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -29,6 +33,9 @@ mongoose.connect(mongoURI, { serverSelectionTimeoutMS: 5000 })
 // Routes
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/messages', require('./routes/messages'));
+
+app.use('/api/auth', authRoutes);
+app.use('/api/messages', messageRoutes);
 
 // Basic route for testing
 app.get('/', (req, res) => {
