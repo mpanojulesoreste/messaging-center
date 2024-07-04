@@ -87,6 +87,27 @@ router.get('/protected', auth, (req, res) => {
         msg: 'This is a protected route',
         user: req.user.id  // req.user is set by the auth middleware
     });
-});    
+}); 
+
+// Refresh Token
+router.post('/refresh', auth, (req, res) => {
+    try {
+      const user = req.user;
+      const payload = { user: { id: user.id } };
+      
+      jwt.sign(
+        payload,
+        process.env.JWT_SECRET,
+        { expiresIn: '1h' },
+        (err, token) => {
+          if (err) throw err;
+          res.json({ token });
+        }
+      );
+    } catch (err) {
+      console.error('Error in token refresh:', err);
+      res.status(500).send('Server Error');
+    }
+  });
 
 module.exports = router;
