@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const auth = require('../middleware/auth');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
@@ -79,5 +80,13 @@ router.post('/login', async (req, res) => {
     res.status(500).send('Server error');
   }
 });
+
+// Protected route
+router.get('/protected', auth, (req, res) => {
+    res.json({
+        msg: 'This is a protected route',
+        user: req.user.id  // req.user is set by the auth middleware
+    });
+});    
 
 module.exports = router;
