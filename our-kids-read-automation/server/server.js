@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', false);
 const cors = require('cors');
+const { scheduleReminders } = require('./utils/scheduler');
 require('dotenv').config();
 
 // Import routes
@@ -54,4 +55,6 @@ app.listen(PORT, () => {
   }
 });
 
+// Schedule reminders
+scheduleReminders();
 module.exports = app;

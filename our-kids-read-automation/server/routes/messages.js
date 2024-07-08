@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const auth = require('../middleware/auth');
 const Message = require('../models/Message');
+const { sendSMS } = require('../utils/twilioClient');
 
 // Create a new message
 router.post('/', auth, async (req, res) => {
@@ -15,10 +16,34 @@ router.post('/', auth, async (req, res) => {
       sessionTime,
       reminders
     });
-    const message = await newMessage.save();
-    res.json(message);
+
+    // Send SMS
+
+    try {
+      const twilioResponse = await sendSMS(phoneNumber, content);
+      newMessage.smsSid = twilioResponse.sid;
+      newMessage.smsStatus = twilioResponse.status;
+      newMessage.status = 'sent';
+      newMessage.twilioMessageData = {
+        sid: twilioResponse.sid,
+        status: twilioResponse.status,
+        dateCreated: twilioResponse.dateCreated,
+        dateSent: twilioResponse.dateSent,
+        direction: twilioResponse.direction,
+        numSegments: twilioResponse.numSegments,
+        price: twilioResponse.price,
+        priceUnit: twilioResponse.priceUnit
+      };
+    } catch (smsError) {
+      console.error('Failed to send SMS:', smsError);
+      newMessage.status = 'failed';
+      newMessage.smsStatus = 'failed';
+    }
+
+    const savedMessage = await newMessage.save();
+    res.json(savedMessage);
   } catch (err) {
-    console.error(err.message);
+    console.error('Error Saving Message:', smsError);
     res.status(500).send('Server Error');
   }
 });
@@ -100,6 +125,23 @@ router.delete('/:id', auth, async (req, res) => {
     if (err.kind === 'ObjectId') {
       return res.status(404).json({ msg: 'Message not found' });
     }
+    res.status(500).send('Server Error');
+  }
+});
+
+// Get SMS status
+router.get('/:id/status', auth, async (req, res) => {
+  try {
+    const message = await Message.findById(req.params.id);
+    if (!message) {
+      return res.status(404).json({ msg: 'Message not found' });
+    }
+    if (message.user.toString() !== req.user.id) {
+      return res.status(401).json({ msg: 'User not authorized' });
+    }
+    res.json({ smsStatus: message.smsStatus });
+  } catch (err) { 
+    console.error(err.message);
     res.status(500).send('Server Error');
   }
 });

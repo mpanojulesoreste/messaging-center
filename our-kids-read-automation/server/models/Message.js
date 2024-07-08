@@ -10,7 +10,10 @@ const MessageSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  phoneNumber: String,
+  phoneNumber: {
+    type: String,
+    required: true
+  },
   email: String,
   sessionTime: Date,
   reminders: [{
@@ -19,8 +22,20 @@ const MessageSchema = new mongoose.Schema({
   }],
   status: {
     type: String,
-    enum: ['scheduled', 'sent', 'cancelled'],
+    enum: ['scheduled', 'sent', 'cancelled', 'failed'],
     default: 'scheduled'
+  },
+  smsSid: String,
+  smsStatus: String,
+  twilioMessageData: {
+    sid: String,
+    status: String,
+    dateCreated: Date,
+    dateSent: Date,
+    direction: String,
+    numSegments: String,
+    price: String,
+    priceUnit: String
   },
   createdAt: {
     type: Date,
