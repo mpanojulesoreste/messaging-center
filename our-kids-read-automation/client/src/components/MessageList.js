@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography, Container } from '@mui/material';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography } from '@mui/material';
 import { getMessages } from '../utils/api';
 import AppLayout from './AppLayout';
 
