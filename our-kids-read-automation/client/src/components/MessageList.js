@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography, Container } from '@mui/material';
 import { getMessages } from '../utils/api';
+import AppLayout from './AppLayout';
 
 function MessageList() {
   const [messages, setMessages] = useState([]);
@@ -20,8 +21,8 @@ function MessageList() {
   };
 
   return (
-    <Container maxWidth="md">
-      <Typography variant="h4" align="center" gutterBottom>
+    <AppLayout>
+      <Typography variant="h4" gutterBottom>
         Message List
       </Typography>
       <TableContainer component={Paper}>
@@ -48,8 +49,9 @@ function MessageList() {
           </TableBody>
         </Table>
       </TableContainer>
-    </Container>
+    </AppLayout>
   );
 }
+
 
 export default MessageList;

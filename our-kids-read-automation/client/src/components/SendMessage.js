@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { TextField, Button, Typography, Container, Checkbox, FormControlLabel } from '@mui/material';
+import { TextField, Button, Typography, Box, Checkbox, FormControlLabel } from '@mui/material';
 import { sendMessage } from '../utils/api';
 import { useNavigate } from 'react-router-dom';
+import AppLayout from './AppLayout';
 
 function SendMessage() {
   const [content, setContent] = useState('');
@@ -44,11 +45,11 @@ function SendMessage() {
   };
 
   return (
-    <Container maxWidth="sm">
-      <Typography variant="h4" align="center" gutterBottom>
+    <AppLayout>
+      <Typography variant="h4" gutterBottom>
         Send Message
       </Typography>
-      <form onSubmit={handleSubmit}>
+      <Box component="form" onSubmit={handleSubmit} sx={{ maxWidth: '600px' }}>
         <TextField
           variant="outlined"
           margin="normal"
@@ -94,23 +95,25 @@ function SendMessage() {
         <Typography variant="subtitle1" gutterBottom>
           Set Reminders:
         </Typography>
-        <FormControlLabel
-          control={<Checkbox checked={reminders['24h']} onChange={handleReminderChange} name="24h" />}
-          label="24 hours before"
-        />
-        <FormControlLabel
-          control={<Checkbox checked={reminders['1h']} onChange={handleReminderChange} name="1h" />}
-          label="1 hour before"
-        />
-        <FormControlLabel
-          control={<Checkbox checked={reminders['5min']} onChange={handleReminderChange} name="5min" />}
-          label="5 minutes before"
-        />
-        <Button type="submit" fullWidth variant="contained" color="primary">
-          Send Message
+        <Box>
+          <FormControlLabel
+            control={<Checkbox checked={reminders['24h']} onChange={handleReminderChange} name="24h" />}
+            label="24 hours before"
+          />
+          <FormControlLabel
+            control={<Checkbox checked={reminders['1h']} onChange={handleReminderChange} name="1h" />}
+            label="1 hour before"
+          />
+          <FormControlLabel
+            control={<Checkbox checked={reminders['5min']} onChange={handleReminderChange} name="5min" />}
+            label="5 minutes before"
+          />
+        </Box>
+        <Button type="submit" variant="contained" color="primary" sx={{ mt: 2 }}>
+          SEND MESSAGE
         </Button>
-      </form>
-    </Container>
+      </Box>
+    </AppLayout>
   );
 }
 
