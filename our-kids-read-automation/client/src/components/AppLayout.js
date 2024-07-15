@@ -1,6 +1,6 @@
 import React from 'react';
-import { Box, List, ListItem, ListItemText, Typography } from '@mui/material';
-import { Link } from 'react-router-dom';
+import { Box, List, ListItem, ListItemText, Typography, Link as MuiLink } from '@mui/material';
+import { Link as RouterLink } from 'react-router-dom';
 
 const styles = {
   sidebar: {
@@ -40,13 +40,13 @@ function AppLayout({ children }) {
           Our Kids Read
         </Typography>
         <List>
-          <ListItem button component={Link} to="/dashboard" sx={styles.listItem}>
+          <ListItem button component={RouterLink} to="/dashboard" sx={styles.listItem}>
             <ListItemText primary="Dashboard" sx={styles.listItemText} />
           </ListItem>
-          <ListItem button component={Link} to="/send-message" sx={styles.listItem}>
+          <ListItem button component={RouterLink} to="/send-message" sx={styles.listItem}>
             <ListItemText primary="Send SMS" sx={styles.listItemText} />
           </ListItem>
-          <ListItem button component={Link} to="/message-list" sx={styles.listItem}>
+          <ListItem button component={RouterLink} to="/message-list" sx={styles.listItem}>
             <ListItemText primary="View Messages" sx={styles.listItemText} />
           </ListItem>
           <ListItem button disabled sx={styles.listItem}>
@@ -60,9 +60,22 @@ function AppLayout({ children }) {
           </ListItem>
         </List>
         <Box sx={styles.footer}>
-          <Typography variant="body2">
-            Software Documentation and Guide
-          </Typography>
+          <MuiLink
+            href="https://docs.google.com/document/d/1-1sw16suI2ZcWGSYe1sORzWGRCj7TFXe9vyNl7nDBMk/edit?usp=sharing"
+            target="_blank"
+            rel="noopener noreferrer"
+            sx={{
+              color: 'white',
+              textDecoration: 'none',
+              '&:hover': {
+                textDecoration: 'underline',
+              },
+            }}
+          >
+            <Typography variant="body2">
+              Software Documentation and Guide
+            </Typography>
+          </MuiLink>
         </Box>
       </Box>
       <Box sx={styles.content}>
