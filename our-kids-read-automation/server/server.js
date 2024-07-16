@@ -1,3 +1,4 @@
+const path = require('path');
 const express = require('express');
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', false);
@@ -30,6 +31,15 @@ mongoose.connect(mongoURI, { serverSelectionTimeoutMS: 5000 })
     if (err.reason) console.log('Error reason:', err.reason);
     console.log('Full error object:', JSON.stringify(err, null, 2));
   });
+
+// Serve static assets in production
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, '../client/build')));
+
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../client/build', 'index.html'));
+  });
+}
 
 // Routes
 app.use('/api/auth', require('./routes/auth'));
