@@ -8,22 +8,22 @@ const { sendSMS } = require('../utils/twilioClient');
 router.post('/', auth, async (req, res) => {
   try {
     const { content, phoneNumber, email, sessionTime, reminders } = req.body;
+
     const newMessage = new Message({
       user: req.user.id,
       content,
       phoneNumber,
       email,
       sessionTime,
-      reminders
+      reminders,
+      status: reminders && reminders.length > 0 ? 'scheduled' : 'sent' // Set status based on reminders
     });
 
     // Send SMS
-
     try {
       const twilioResponse = await sendSMS(phoneNumber, content);
       newMessage.smsSid = twilioResponse.sid;
       newMessage.smsStatus = twilioResponse.status;
-      newMessage.status = 'sent';
       newMessage.twilioMessageData = {
         sid: twilioResponse.sid,
         status: twilioResponse.status,
@@ -43,7 +43,7 @@ router.post('/', auth, async (req, res) => {
     const savedMessage = await newMessage.save();
     res.json(savedMessage);
   } catch (err) {
-    console.error('Error Saving Message:', smsError);
+    console.error('Error saving message:', err);
     res.status(500).send('Server Error');
   }
 });

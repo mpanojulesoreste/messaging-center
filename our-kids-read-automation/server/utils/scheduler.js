@@ -1,25 +1,37 @@
 const cron = require('node-cron');
+const moment = require('moment-timezone');
 const Message = require('../models/Message');
 const { sendSMS } = require('./twilioClient');
 
 const scheduleReminders = () => {
-  // Check for reminders every minute
   cron.schedule('* * * * *', async () => {
-    const now = new Date();
-    const messages = await Message.find({ status: 'scheduled' });
+    const now = moment().tz('America/New_York');
+    console.log('Checking for reminders:', now.format());
 
-    for (let message of messages) {
-      const sessionTime = new Date(message.sessionTime);
-      const timeDiff = sessionTime.getTime() - now.getTime();
-      const hoursDiff = timeDiff / (1000 * 60 * 60);
+    try {
+      const messages = await Message.find({ status: 'scheduled' });
+      console.log(`Found ${messages.length} scheduled messages`);
 
-      if (message.reminders.includes('24h') && hoursDiff <= 24 && hoursDiff > 23) {
-        await sendReminder(message, '24 hours');
-      } else if (message.reminders.includes('1h') && hoursDiff <= 1 && hoursDiff > 0) {
-        await sendReminder(message, '1 hour');
-      } else if (message.reminders.includes('5min') && timeDiff <= 5 * 60 * 1000 && timeDiff > 0) {
-        await sendReminder(message, '5 minutes');
+      for (let message of messages) {
+        const sessionTime = moment(message.sessionTime).tz('America/New_York');
+        const timeDiff = sessionTime.diff(now, 'minutes');
+
+        console.log(`Message ID: ${message._id}`);
+        console.log(`Session time: ${sessionTime.format()}`);
+        console.log(`Current time: ${now.format()}`);
+        console.log(`Time difference: ${timeDiff} minutes`);
+        console.log(`Reminders: ${message.reminders}`);
+
+        if (message.reminders.includes('24h') && timeDiff > 1435 && timeDiff <= 1440) {
+          await sendReminder(message, '24 hours');
+        } else if (message.reminders.includes('1h') && timeDiff > 55 && timeDiff <= 60) {
+          await sendReminder(message, '1 hour');
+        } else if (message.reminders.includes('5min') && timeDiff > 4 && timeDiff <= 5) {
+          await sendReminder(message, '5 minutes');
+        }
       }
+    } catch (error) {
+      console.error('Error in scheduleReminders:', error);
     }
   });
 };
@@ -27,12 +39,14 @@ const scheduleReminders = () => {
 const sendReminder = async (message, timeFrame) => {
   try {
     const reminderText = `Reminder: Your reading session is in ${timeFrame}.`;
+    console.log(`Sending ${timeFrame} reminder for session at ${moment(message.sessionTime).format()}`);
     const smsSid = await sendSMS(message.phoneNumber, reminderText);
     message.smsSid = smsSid;
     message.smsStatus = 'sent';
     await message.save();
+    console.log(`${timeFrame} reminder sent successfully for session at ${moment(message.sessionTime).format()}`);
   } catch (error) {
-    console.error(`Failed to send ${timeFrame} reminder:`, error);
+    console.error(`Failed to send ${timeFrame} reminder for session at ${moment(message.sessionTime).format()}:`, error);
     message.smsStatus = 'failed';
     await message.save();
   }
