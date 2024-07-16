@@ -1,14 +1,18 @@
 {
   "name": "our-kids-read-automation",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "SMS/Email automation system for Our Kids Read",
+  "main": "server/server.js",
   "scripts": {
     "start": "node server/server.js",
-    "test": "jest --testEnvironment=node --forceExit --detectOpenHandles --coverage ./server/tests"
+    "test": "jest --testEnvironment=node --forceExit --detectOpenHandles --coverage ./server/tests",
+    "heroku-postbuild": "cd client && npm install && npm run build"
+  },
+  "engines": {
+    "node": "14.x"
   },
   "keywords": [],
-  "author": "",
+  "author": "Jules Mpano",
   "license": "ISC",
   "dependencies": {
     "bcryptjs": "^2.4.3",
