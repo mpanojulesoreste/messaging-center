@@ -2,7 +2,7 @@
 node_modules/
 
 # Environment variables
-/.env
+our-kids-read-automation/.env
 
 /client/build
 # Debug logs
